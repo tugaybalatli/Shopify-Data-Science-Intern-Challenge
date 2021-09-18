@@ -1,0 +1,78 @@
+---
+title: <center> <h3> Shopify </h3> <h2> Winter Internship 2022 </h2> <h3> done by </h3> <h3> <span style="color:red">*Tugay Balatlı* </span> </h3> </center>
+pagetitle: Shopify
+params:
+ resume_on_error: no
+output: 
+  bookdown::html_document2:
+    theme: readable
+    toc: false
+---
+  
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("tidyverse")
+library("ggplot2")
+library("readxl")
+library("GGally")
+library("magrittr")
+library("pander")
+```
+
+# Explanatory Data Analysis
+```{r, fig.asp=1}
+data <- data.frame(readxl::read_xlsx("2019 Winter Data Science Intern Challenge Data Set.xlsx"))
+
+summary(is.na(data)) %>% pander()
+summary(data) %>% pander()
+
+ggplot(data, aes( x = order_amount)) + geom_density()
+ggplot(data, aes( x = order_amount)) + geom_boxplot()
+```
+
+
+$$
+\text{Average Order Value} = \text{Revenue} / \text{Number of Orders}
+$$
+
+# Outlier Elimination
+
+Here, I eliminated orders that have extremely high order costs which is 704000 and the orders are taken from `shop_id` 78 since its products are way expensive that is 25725 than usual shoe prices.
+
+```{r}
+to_del = which(data$order_amount == 704000 | data$shop_id == 78)
+
+new_data <- data[-to_del,]
+
+summary(new_data) %>% pander()
+
+ggplot(new_data, aes( x = order_amount)) + geom_density()
+ggplot(new_data, aes( x = order_amount)) + geom_boxplot()
+```
+
+
+The new Average Order Value is 302.6 according to my analysis
+
+# Questions
+
+## Think about what could be going wrong with our calculation. Think about a better way to evaluate this data. 
+By checking the dataset, I observed some outliers. This might be a problem while we are trying to calculate a mean value. There are no missing values which is good. As it can be a problem in the modelling phase and generalizable results, we should consider removing the outlier values by checking the quantile values. We can choose a threshold as .75 quantile.
+
+## What metric would you report for this dataset?
+If we directly use average value, we might make mistakes. As I indicated in the first question, the mean value can be misleading. Instead, we can report 
+several quantile (or percentile) values, such as .5, .25, .50, .75, .95.
+
+
+## What is its value?
+Without outlier elimination,
+```{r}
+quantile(data$order_amount, c(.05, .25, .5, .75, .95)) %>% pander()
+```
+
+With outlier elimination,
+```{r}
+quantile(new_data$order_amount, c(.05, .25, .5, .75, .95)) %>% pander()
+```
+
+
+
