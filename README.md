@@ -1,4 +1,5 @@
-# Shopify-Data-Science-Intern-Challenge
+# Shopify Data Science Intern Winter 2022
+## Shopify Data Science Intern Challenge
 
 - You can find my solutions in R for the first question. 
 
